@@ -3,3 +3,4 @@ package-lock.json
 error.log
 info.log
 data
+.nyc_output

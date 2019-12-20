@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    productId: {
+    restaurantId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant',
         required: true
@@ -17,7 +17,7 @@ const orderSchema = mongoose.Schema({
     city: {
         type: String
     },
-    orderData: { type: Date, default: (new Date().toLocaleDateString('en-US'))}
+    orderDate: { type: Date}
 })
 
 module.exports = mongoose.model('Order', orderSchema, 'Order');

@@ -1,14 +1,14 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-// var logger = require('morgan');
 const config = require('dotenv').config();
 const logger = require('./logger');
 
 const orderRoutes = require("./routes/order");
 
+// ============================= views
 var app = express();
-
+app.set('view engine', 'jade');
 // ============================== mongo connection
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -23,35 +23,16 @@ connect.then((db)=>{
 },(error)=>{
   logger.error('Unable to connect the DB', error);
 });
+
 // ======================================
-
-
-// app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // ============================= routers: =============================
-app.use("/orders", orderRoutes);
+app.use("/", orderRoutes);
 
-app.use('/get', (res, req, next)=>{
-  throw new Error('this is error')
-})
 
-// function middlewareError(err, re, res, next){
-//   console.oog("Error", err);
-//   next(err)
-// }
-
-// app.use('/custom-error', (res, req, next)=>{
-
-// }, middlewareError)
-// catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//   res.json({error: true})
-//   next(createError(404));
-// });
-
-// error handler
+// ============================= error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
