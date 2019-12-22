@@ -8,6 +8,7 @@ const orderRoutes = require("./routes/order");
 
 // ============================= views
 var app = express();
+app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 // ============================== mongo connection
 const mongoose = require('mongoose');
