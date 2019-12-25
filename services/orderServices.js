@@ -1,4 +1,4 @@
-const Order = require('../Models/order');
+const Order = require('../models/order');
 const logger = require('../logger');
 const fetch = require('node-fetch');
 const mongoose = require('mongoose');
@@ -46,7 +46,13 @@ var orders = {
             city: req.body.city
         })
         order.save().then(result => {
-            let order_details = res.status(201).json({
+            fetch('http://localhost:7777/publisher', {
+                method: 'post',
+                body: JSON.stringify(result, null, 2),
+                headers: { 'Content-Type': 'application/json' }
+            }).then(json => console.log(json.status));
+
+            res.status(201).json({
                 message: "Order Stored",
                 createdOrder: {
                     _id: result._id,
@@ -60,13 +66,6 @@ var orders = {
                     ur: 'http://localhost:3001/orders/' + result._id
                 }
             });
-
-            fetch('http://localhost:7777/publisher', {
-                method: 'post',
-                body: JSON.stringify(order_details),
-                headers: { 'Content-Type': 'application/json' },
-            }).then(res => res.json())
-                .then(json => console.log(json));
 
             logger.info("Order Placed successfully", {
                 _id: result._id,
