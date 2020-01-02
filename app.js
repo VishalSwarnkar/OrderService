@@ -1,16 +1,21 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-require('dotenv').config();
 const logger = require('./logger');
 const bodyParser = require('body-parser')
-
 const orderRoutes = require("./routes/order");
-
+const morgan = require('morgan');
+const authentic = require('./services/authorization');
+const route = express.Router();
+require('dotenv').config();
 // ============================= views
 var app = express();
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+
+// =============================== middle ware ====
+app.use(morgan('dev'))
+
 // ============================== mongo connection
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -27,24 +32,16 @@ connect.then((db)=>{
 });
 
 // ======================================
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // ============================= routers: =============================
-app.use("/", orderRoutes);
+app.post('/authenticate', authentic.setToken);
+app.use('/api', route);
 
-
-// ============================= error handler
-// app.use(function(err, req, res, next) {
-//   // set locals, only providing error in development
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-//   // render the error page
-//   res.status(err.status || 500);
-//   res.render('error');
-// });
+route.use(authentic.authorization);
+route.use("/", orderRoutes);
 
 module.exports = app;
